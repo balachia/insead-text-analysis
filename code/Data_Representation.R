@@ -27,7 +27,7 @@ library.or.install('reshape2')      # Better data-frame reshaping than tidyverse
 ##### Download And Load Dataset
 
 # Download this file
-# download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/code/faculty-tm.R', './faculty-tm.R')
+# download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/code/Data_Representation.R', './Data_Representation.R')
 
 #df <- read_csv('../data/insead-faculty.csv')
 download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/data/insead-faculty.csv', './insead-faculty.csv')
