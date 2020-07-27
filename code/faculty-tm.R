@@ -23,7 +23,9 @@ library.or.install('reshape2')      # Better data-frame reshaping than tidyverse
 
 ##### Download And Load Dataset
 
-df <- read_csv('../data/insead-faculty.csv')
+#df <- read_csv('../data/insead-faculty.csv')
+download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/data/insead-faculty.csv', './insead-faculty.csv')
+df <- read_csv('./insead-faculty.csv')
 
 # tokens <- df[, c('id', 'area', 'bio')] %>%
 #    unnest_tokens(word, bio)
