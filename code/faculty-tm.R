@@ -31,13 +31,16 @@ library.or.install('reshape2')      # Better data-frame reshaping than tidyverse
 download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/data/insead-faculty.csv', './insead-faculty.csv')
 df <- read_csv('./insead-faculty.csv')
 
+# Split text into word tokens
 # tokens <- df[, c('id', 'area', 'bio')] %>%
 #    unnest_tokens(word, bio)
 
+# For this exercise, (1) first split text into sentences...
 tokens.sentence <- df[, c('id', 'area', 'bio')] %>%
     unnest_tokens(sentence, bio, token='sentences') %>%
     mutate(sentence.no=row_number())
 
+# ... then (2) split sentences into work tokens
 tokens <- tokens.sentence %>%
     unnest_tokens(word, sentence)
 
@@ -53,32 +56,33 @@ data(stop_words)
 tokens.stop <- tokens %>%
     anti_join(stop_words)
 # tokens <- tokens.stop
-cat('Original:\n\t', tokens[tokens$sentence.no==1,]$word, '\n')
-cat('Stop-words:\n\t', tokens.stop[tokens.stop$sentence.no==1,]$word, '\n')
 # Top words
 tokens.stop %>%
     count(word, sort=TRUE)
+# Compare
+cat('Original:\n\t', tokens[tokens$sentence.no==1,]$word, '\n')
+cat('Stop-words:\n\t', tokens.stop[tokens.stop$sentence.no==1,]$word, '\n')
 
 # Stemming
 tokens.stem <- tokens %>%
     mutate(word=wordStem(word, language='porter'))
 # tokens <- tokens %>% mutate(word=wordStem(word, language='porter'))
-# Compare
-cat('Original:\n\t', tokens[tokens$sentence.no==1,]$word, '\n')
-cat('Stemmed:\n\t', tokens.stem[tokens.stem$sentence.no==1,]$word, '\n')
 # Top words
 tokens.stem %>%
     count(word, sort=TRUE)
+# Compare
+cat('Original:\n\t', tokens[tokens$sentence.no==1,]$word, '\n')
+cat('Stemmed:\n\t', tokens.stem[tokens.stem$sentence.no==1,]$word, '\n')
 
 # Both
 tokens.stop.stem <- tokens.stop %>%
     mutate(word=wordStem(word, language='porter'))
-# Compare
-cat('Original:\n\t', tokens[tokens$sentence.no==1,]$word, '\n')
-cat('Stop-words, stemmed:\n\t', tokens.stop.stem[tokens.stop.stem$sentence.no==1,]$word, '\n')
 # Top words
 tokens.stop.stem %>%
     count(word, sort=TRUE)
+# Compare
+cat('Original:\n\t', tokens[tokens$sentence.no==1,]$word, '\n')
+cat('Stop-words, stemmed:\n\t', tokens.stop.stem[tokens.stop.stem$sentence.no==1,]$word, '\n')
 
 # Lemmatization
 # Look at package: textstem
@@ -113,6 +117,7 @@ ohe.dtm %>%
 
 ##### Bag-of-words
 
+# Bag-of-words: document=faculty
 bow <- tokens %>%
     group_by(id) %>%
     count(word)
@@ -130,6 +135,7 @@ bow.dtm %>%
     format(units='auto') %>%
     cat('Dense BOW size:', ., '\n')
 
+# Bag-of-words: document=sentence
 bow.sentence <- tokens %>%
     group_by(sentence.no) %>%
     count(word)
@@ -178,6 +184,7 @@ s2p.match <- function(sentence.dtm, person.dtm, similarity.f=csim) {
         mutate(matched=(matched.id==sentence.id))
 }
 
+# Match faculty members to each other
 p2p.match <- function(dtm, similarity.f=csim) {
     similarity.f(dtm, dtm) %>%
         similarities2tibble %>%
@@ -189,14 +196,26 @@ p2p.match <- function(dtm, similarity.f=csim) {
 
 # Attempt to match using bag-of-words
 # Match sentence to person
-bow.s2p <- s2p.match(bow.sentence.dtm, bow.dtm)
+# First, using Jaccard similarity:
+bow.s2p <- s2p.match(bow.sentence.dtm, bow.dtm, similarity.f=jsim)
 # What % of A's sentences were matched to them? (Recall)
 bow.s2p %>%
     group_by(sentence.id) %>%
     summarize(matched=mean(matched))
 bow.s2p$matched %>% mean
 
-# Match person to person
+# Second, using cosine similarity:
+bow.s2p <- s2p.match(bow.sentence.dtm, bow.dtm)
+bow.s2p %>%
+    group_by(sentence.id) %>%
+    summarize(matched=mean(matched))
+bow.s2p$matched %>% mean
+
+# Match person to person, Jaccard
+bow.p2p <- p2p.match(bow.dtm, similarity.f=jsim)
+print(bow.p2p)
+
+# Match person to person, cosine
 bow.p2p <- p2p.match(bow.dtm)
 print(bow.p2p)
 
