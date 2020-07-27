@@ -2,8 +2,9 @@
 # In normal life, just do:
 # library(tidyverse)
 # library(tidytext)
+# library(SnowballC)
 # library(Matrix)
-# library('reshape2')
+# library(reshape2)
 
 # For teaching purposes:
 # Install a library iff it is not yet installed, then load it
@@ -22,6 +23,9 @@ library.or.install('reshape2')      # Better data-frame reshaping than tidyverse
 
 
 ##### Download And Load Dataset
+
+# Download this file
+# download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/code/faculty-tm.R', './faculty-tm.R')
 
 #df <- read_csv('../data/insead-faculty.csv')
 download.file('https://raw.githubusercontent.com/balachia/insead-text-analysis/master/data/insead-faculty.csv', './insead-faculty.csv')
