@@ -2,6 +2,7 @@
 # In normal life, just do:
 # library(tidyverse)
 # library(tidytext)
+# library(tm)
 # library(SnowballC)
 # library(Matrix)
 # library(reshape2)
@@ -17,6 +18,7 @@ library.or.install <- function(package) {
 
 library.or.install('tidyverse')     # Modern R programming pipeline
 library.or.install('tidytext')      # Tidyverse-style text analysis
+library.or.install('tm')            # General-purpose text-mining in R
 library.or.install('SnowballC')     # Word stemming
 library.or.install('Matrix')        # Need for sparse matrix manipulation
 library.or.install('reshape2')      # Better data-frame reshaping than tidyverse
