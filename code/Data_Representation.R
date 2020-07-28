@@ -197,10 +197,11 @@ p2p.match <- function(dtm, similarity.f=csim) {
 }
 
 # Plot sentence-matching errors
-confusion.plot <- function(s2p) {
+confusion.plot <- function(s2p, highlight=FALSE) {
+    n_matches <- length(unique(s2p$sentence.id))
     s2p %>%
         group_by(matched.id, sentence.id) %>%
-        summarize(matched=n()/199) %>%
+        summarize(matched=(n()/n_matches)^(if(highlight) (1/2) else (1))) %>%
         right_join(tidyr::expand(., matched.id, sentence.id)) %>%
         replace_na(list(matched=0)) %>%
         ggplot(aes(matched.id, sentence.id, fill=matched)) +
@@ -222,7 +223,7 @@ bow.s2p$matched %>% mean
 
 # Confusion matrix
 bow.s2p %>%
-    confusion.plot
+    confusion.plot()
 
 # Second, using cosine similarity:
 bow.s2p <- s2p.match(bow.sentence.dtm, bow.dtm)
@@ -233,7 +234,7 @@ bow.s2p$matched %>% mean
 
 # Confusion matrix
 bow.s2p %>%
-    confusion.plot
+    confusion.plot()
 
 # Match person to person, Jaccard
 bow.p2p <- p2p.match(bow.dtm, similarity.f=jsim)
@@ -287,7 +288,7 @@ tfidf.s2p$matched %>% mean
 
 # Confusion matrix
 tfidf.s2p %>%
-    confusion.plot
+    confusion.plot()
 
 # Match person to person
 tfidf.p2p <- p2p.match(tfidf.dtm)
@@ -355,7 +356,7 @@ bow.ngram.s2p$matched %>% mean
 
 # Confusion matrix
 bow.ngram.s2p %>%
-    confusion.plot
+    confusion.plot()
 
 # Match person to person
 bow.ngram.p2p <- p2p.match(bow.ngram.dtm)
